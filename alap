@@ -1,0 +1,75 @@
+create table folders (folder_id serial primary key,
+	folder_name varchar(200),
+	parent_id int,
+	last_level boolean
+	)
+
+alter table folders
+	rename column perent_id to parent_id;
+	
+select * from folders
+
+insert into folders(folder_id,folder_name, perent_id)
+values (1,'Mobiles',NULL),
+(2,'Apple',1),
+(3,'samsung',1),
+(4,'Iphone 14',2),
+(5,'Iphone 14 pro',2),
+(6,'Iphone 14 pro max',2),
+(7,'S 22',3),
+(8,'s 22 plusz',3),
+(9, 'S 22 ultra',3),
+(10, 'TV',NULL),
+(11,'LG',10),
+(12,'Sony',10)
+
+select * from folders
+
+
+--szülő alatt ki található.
+WITH RECURSIVE prods_query
+AS (
+ SELECT folder_id
+  ,folder_name
+  ,parent_id
+ FROM folders e
+ WHERE folder_name IN('samsung','Apple')
+ 
+ UNION ALL
+ 
+ SELECT e.folder_id
+  ,e.folder_name
+  ,e.parent_id
+ FROM folders e
+ INNER JOIN prods_query c ON e.parent_id = c.folder_id
+ )
+SELECT *
+FROM prods_query;
+
+---- parent visszakeresése
+WITH RECURSIVE prods_query AS 
+(
+ select folder_id, folder_name, parent_id
+ from folders
+ where folder_name = 'S 22'
+ UNION ALL
+select e.folder_id, e.folder_name, e.parent_id
+From folders e
+INNER JOIN prods_query c ON e.folder_id = c.parent_id
+)
+Select * from prods_query;
+
+--Új csomag nyitása csak olyanra lehetséges aminek a neve még nincs benne a táblában.
+
+--Új elem hozzáadása csak olyan csomaghoz lehetséges, ha:
+	-- az elemnek még nincs parent_id-ja.
+	-- az csomag még nyitott állapotban van.
+	-- Ami stock-ja az adott hely.
+
+--Szükséges csomag zárás
+	--Csak olyan csomagot lehet lezárni aminek a sátusza open
+	-- Csak olyan csomagot lehet lezárni amiben van elem.
+
+--elem kivételéhez:
+	--Csak nyitott csomagból lehet. Ha már nem nyitott, akkor töröljük az egészet és előlről kell csinálni.
+	-- Meg kell adni a parent-t, illetve azt amit ki szeretnénk venni.
