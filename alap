@@ -1,3 +1,5 @@
+https://medium.com/learning-sql/working-with-hierarchical-data-in-postgres-d92e86464c41
+
 create table folders (folder_id serial primary key,
 	folder_name varchar(200),
 	parent_id int,
